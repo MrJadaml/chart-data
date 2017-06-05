@@ -15,24 +15,32 @@ const Sensor = {
     let chartPoint;
     let value;
     let timestamp = timeBlockSet[0].timestamp;
+    let size = timeBlockSet.length;
 
     timeBlockSet.forEach(reading => {
-      avg += parseInt(reading.value)
+      let readingValue = parseFloat(reading.value);
+
+      if ( (typeof readingValue !== 'number') || isNaN(readingValue) ) {
+        size--;
+        return
+      }
+
+      avg += readingValue;
     });
 
-    value = avg / timeBlockSet.length;
+    value = avg / size;
 
     return { timestamp, value }
   },
 
-
   buildDataPulse(sensorData, startDate, timeblock = 600000) {
+    const sortedData = sensorData.sort((a,b) => new Date(a.timestamp, b.timestamp));
     let timeBlocks = [];
     let endOfTimeBlock = this.toMilliSec(startDate) + timeblock;
     let idx = 0;
     let isArray;
 
-    sensorData.forEach(reading => {
+    sortedData.forEach(reading => {
       let newReading;
 
       if (this.toMilliSec(reading.timestamp) > endOfTimeBlock) {

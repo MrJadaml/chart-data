@@ -20,8 +20,7 @@ app.get('/chartdata', (req, res, next) => {
 
   Sensor.getChartData(title, room, startDate, length)
   .then(data => {
-    const sortedData = data.sort((a,b) => new Date(a.timestamp, b.timestamp));
-    let timeBlocks = Sensor.buildDataPulse(sortedData, startDate);
+    let timeBlocks = Sensor.buildDataPulse(data, startDate);
     let chartPoints = timeBlocks.map(Sensor.buildChartPoint);
 
     res.json(chartPoints);

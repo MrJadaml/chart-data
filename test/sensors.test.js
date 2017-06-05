@@ -9,15 +9,16 @@ describe('/chartdata', () => {
   it('should respond with a 400 if missing query params', done => {
     request(app)
       .get('/chartdata')
+      .expect('Content-Type', /json/)
       .expect(400)
       .then(res => {
         res.body.message.should.equal('Missing room, start_date, or title');
         done();
       })
-      //.catch(err => {
-        //console.log(err);
-        //done();
-      //})
+      .catch(err => {
+        console.log(err);
+        done();
+      })
   });
 
   it('should respond with timesamp and sensor value when given valid query params', done => {
@@ -26,6 +27,7 @@ describe('/chartdata', () => {
       .query({title: 'temperature'})
       .query({room: 'Hoop 1'})
       .query({startDate: '2017-01-25T12:21:07.891z'})
+      .expect('Content-Type', /json/)
       .expect(200)
       .then(res => {
         res.body.should.be.an('array');

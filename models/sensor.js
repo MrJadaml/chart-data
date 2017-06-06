@@ -2,44 +2,12 @@ const db = require('monk')('localhost/iunu');
 const Sensors = db.get('sensors');
 
 const Sensor = {
-  prevTimeBlock: [{ timestamp: 4242424242, value: 0 }], // temp startdate before structure swap
-
   getChartData(title, room, startDate, length) {
     const seventyTwoHrs = 259200000;
     const startPlusThreeDays = new Date(this.toMilliSec(startDate) + seventyTwoHrs);
     const endDate = length || startPlusThreeDays;
 
     return Sensors.find({ title, room, timestamp: { $gte: new Date(startDate), $lt: new Date(endDate) } });
-  },
-
-  buildChartPoint(timeBlockSet) {
-    if (timeBlockSet.length === 0) {
-      return this.prevTimeBlock;
-    }
-
-    let avg = 0;
-    let value;
-    let timestamp = timeBlockSet[0].timestamp;
-    let size = timeBlockSet.length;
-
-    timeBlockSet.forEach(reading => {
-      let readingValue = parseFloat(reading.value);
-      let isReadingValNum = typeof readingValue !== 'number';
-      let isReadingValNaN = isNaN(readingValue);
-      let isReadingValZero = readingValue === 0;
-
-      if ( isReadingValNum || isReadingValNaN || isReadingValZero ) {
-        size--;
-        return
-      }
-
-      avg += readingValue;
-    });
-
-    value = avg / size;
-
-    this.prevTimeBlock = { timestamp, value };
-    return { timestamp, value }
   },
 
   buildDataPulse(sensorData, startDate, timeblock = 600000) {
@@ -53,6 +21,14 @@ const Sensor = {
       let readingValue = parseFloat(reading.value);
       let lastItem = idx === sortedData.length - 1;
       let pastCurrentTimeBlock = this.toMilliSec(reading.timestamp) > timeBlockLimit;
+
+      let isReadingValNotNum = typeof readingValue !== 'number';
+      let isReadingValNaN = isNaN(readingValue);
+
+      if ( isReadingValNotNum || isReadingValNaN ) {
+        return
+      }
+
 
       if (pastCurrentTimeBlock) {
         let value = avg / count;
@@ -68,7 +44,6 @@ const Sensor = {
 
       if (lastItem) {
         let value = avg / count;
-
         timeBlocks.push({ timestamp: new Date(timeBlockLimit), value });
       }
     });

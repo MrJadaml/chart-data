@@ -2,6 +2,8 @@ const db = require('monk')('localhost/iunu');
 const Sensors = db.get('sensors');
 
 const Sensor = {
+  prevTimeBlock: [{ timestamp: 4242424242, value: 0 }], // temp startdate before structure swap
+
   getChartData(title, room, startDate, length) {
     const seventyTwoHrs = 259200000;
     const startPlusThreeDays = new Date(this.toMilliSec(startDate) + seventyTwoHrs);
@@ -11,16 +13,22 @@ const Sensor = {
   },
 
   buildChartPoint(timeBlockSet) {
+    if (timeBlockSet.length === 0) {
+      return this.prevTimeBlock;
+    }
+
     let avg = 0;
-    let chartPoint;
     let value;
     let timestamp = timeBlockSet[0].timestamp;
     let size = timeBlockSet.length;
 
     timeBlockSet.forEach(reading => {
       let readingValue = parseFloat(reading.value);
+      let isReadingValNum = typeof readingValue !== 'number';
+      let isReadingValNaN = isNaN(readingValue);
+      let isReadingValZero = readingValue === 0;
 
-      if ( (typeof readingValue !== 'number') || isNaN(readingValue) ) {
+      if ( isReadingValNum || isReadingValNaN || isReadingValZero ) {
         size--;
         return
       }
@@ -30,6 +38,7 @@ const Sensor = {
 
     value = avg / size;
 
+    this.prevTimeBlock = { timestamp, value };
     return { timestamp, value }
   },
 

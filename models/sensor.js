@@ -45,22 +45,32 @@ const Sensor = {
   buildDataPulse(sensorData, startDate, timeblock = 600000) {
     const sortedData = sensorData.sort((a,b) => new Date(a.timestamp, b.timestamp));
     let timeBlocks = [];
-    let endOfTimeBlock = this.toMilliSec(startDate) + timeblock;
-    let idx = 0;
-    let isArray;
+    let timeBlockLimit = this.toMilliSec(startDate) + timeblock;
+    let count = 0;
+    let avg = 0;
 
-    sortedData.forEach(reading => {
-      let newReading;
+    sortedData.forEach((reading, idx) => {
+      let readingValue = parseFloat(reading.value);
+      let lastItem = idx === sortedData.length - 1;
+      let pastCurrentTimeBlock = this.toMilliSec(reading.timestamp) > timeBlockLimit;
 
-      if (this.toMilliSec(reading.timestamp) > endOfTimeBlock) {
-        endOfTimeBlock += timeblock;
-        idx++;
+      if (pastCurrentTimeBlock) {
+        let value = avg / count;
+
+        timeBlocks.push({ timestamp: new Date(timeBlockLimit), value });
+        timeBlockLimit += timeblock;
+        count = 0;
+        avg = 0;
       }
 
-      newReading = { timestamp: new Date(endOfTimeBlock), value: reading.value, }
-      isArray = timeBlocks[idx] instanceof Array;
+      count++;
+      avg += readingValue;
 
-      isArray ? timeBlocks[idx].push(newReading) : timeBlocks[idx] = [newReading];
+      if (lastItem) {
+        let value = avg / count;
+
+        timeBlocks.push({ timestamp: new Date(timeBlockLimit), value });
+      }
     });
 
     return timeBlocks;

@@ -15,10 +15,6 @@ describe('/chartdata', () => {
         res.body.message.should.equal('Missing room, start_date, or title');
         done();
       })
-      .catch(err => {
-        console.log(err);
-        done();
-      })
   });
 
   it('should respond with timesamp and sensor value when given valid query params', done => {
@@ -33,10 +29,6 @@ describe('/chartdata', () => {
         res.body.should.be.an('array');
         res.body.should.have.lengthOf.below(433);
         res.body[0].should.have.all.keys('timestamp', 'value');
-        done();
-      })
-      .catch(err => {
-        console.log(err);
         done();
       })
   });

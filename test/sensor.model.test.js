@@ -141,7 +141,6 @@ describe('Sensor Model', () => {
       });
     });
 
-
     it('should ignore readings with a 0 `value`', () => {
       const startDate = '2017-01-24T14:10:00.594Z';
       const sensorData = [{
@@ -190,133 +189,9 @@ describe('Sensor Model', () => {
       });
     });
 
-    xit('should set chartpoint to previous time block if it is an empty array', () => {
-    });
-  });
-
-  xcontext('#buildChartPoint', () => {
-    it('should return an object w/ valid timestamp and value', () => {
-      const timeBlockSet = [{
-          "title": "vpd",
-          "value": "10.0858810644",
-          "sensor_num": "METEOMK1-7FADC",
-          "room": "Hoop 1",
-          "sensor_version": "1.00",
-          "timestamp": new Date("2017-01-24T14:10:39.594Z"),
-          "hostname": "cam0243",
-          "vpd": "10.0858810644",
-          "sensor_group": "Production",
-          "role": "plant cam",
-          "type": "vpd",
-        }, {
-          "title": "vpd",
-          "value": "7.68855202804",
-          "sensor_num": "METEOMK1-7FAAB",
-          "room": "Hoop 1",
-          "sensor_version": "1.00",
-          "timestamp": new Date("2017-01-24T14:21:15.156Z"),
-          "hostname": "cam0271",
-          "vpd": "7.68855202804",
-          "sensor_group": "Production",
-          "role": "plant cam",
-          "type": "vpd",
-      }];
-
-      const actual = Sensor.buildChartPoint(timeBlockSet)
-
-      actual.should.be.an('object');
-      actual.should.have.ownPropertyDescriptor('timestamp', {
-        configurable: true,
-        enumerable: true,
-        writable: true,
-        value: new Date ('2017-01-24T14:10:39.594Z'),
-      });
-      actual.should.have.ownPropertyDescriptor('value', {
-        configurable: true,
-        enumerable: true,
-        writable: true,
-        value: 8.88721654622,
-      });
-    });
-
-    it('should ignore readings with missing/NaN `value`s', () => {
-      const timeBlockSet = [{
-          "title": "vpd",
-          "value": "",
-          "sensor_num": "METEOMK1-7FADC",
-          "room": "Hoop 1",
-          "sensor_version": "1.00",
-          "timestamp": new Date("2017-01-24T14:10:39.594Z"),
-          "hostname": "cam0243",
-          "vpd": "10.0858810644",
-          "sensor_group": "Production",
-          "role": "plant cam",
-          "type": "vpd",
-        }, {
-          "title": "vpd",
-          "value": "7.68855202804",
-          "sensor_num": "METEOMK1-7FAAB",
-          "room": "Hoop 1",
-          "sensor_version": "1.00",
-          "timestamp": new Date("2017-01-24T14:21:15.156Z"),
-          "hostname": "cam0271",
-          "vpd": "7.68855202804",
-          "sensor_group": "Production",
-          "role": "plant cam",
-          "type": "vpd",
-      }];
-
-      const actual = Sensor.buildChartPoint(timeBlockSet)
-
-      actual.should.be.an('object');
-      actual.should.have.ownPropertyDescriptor('value', {
-        configurable: true,
-        enumerable: true,
-        writable: true,
-        value: 7.68855202804,
-      });
-    });
-
-    it('should ignore readings with a 0 `value`', () => {
-      const timeBlockSet = [{
-          "title": "vpd",
-          "value": "0",
-          "sensor_num": "METEOMK1-7FADC",
-          "room": "Hoop 1",
-          "sensor_version": "1.00",
-          "timestamp": new Date("2017-01-24T14:10:39.594Z"),
-          "hostname": "cam0243",
-          "vpd": "0",
-          "sensor_group": "Production",
-          "role": "plant cam",
-          "type": "vpd",
-        }, {
-          "title": "vpd",
-          "value": "7.68855202804",
-          "sensor_num": "METEOMK1-7FAAB",
-          "room": "Hoop 1",
-          "sensor_version": "1.00",
-          "timestamp": new Date("2017-01-24T14:21:15.156Z"),
-          "hostname": "cam0271",
-          "vpd": "7.68855202804",
-          "sensor_group": "Production",
-          "role": "plant cam",
-          "type": "vpd",
-      }];
-
-      const actual = Sensor.buildChartPoint(timeBlockSet)
-
-      actual.should.be.an('object');
-      actual.should.have.ownPropertyDescriptor('value', {
-        configurable: true,
-        enumerable: true,
-        writable: true,
-        value: 7.68855202804,
-      });
-    });
-
     it('should set chartpoint to previous time block if it is an empty array', () => {
-      const timeBlockSet = [{
+      const startDate = '2017-01-24T14:10:00.594Z';
+      const sensorData = [{
           "title": "vpd",
           "value": "0",
           "sensor_num": "METEOMK1-7FADC",
@@ -342,8 +217,8 @@ describe('Sensor Model', () => {
           "type": "vpd",
       }];
 
-      Sensor.buildChartPoint(timeBlockSet)
-      const actual = Sensor.buildChartPoint([])
+      Sensor.buildDataPulse(sensorData, startDate);
+      const actual = Sensor.buildDataPulse(sensorData, startDate);
 
       actual.should.be.an('object');
       actual.should.have.ownPropertyDescriptor('value', {

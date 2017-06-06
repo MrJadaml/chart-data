@@ -18,23 +18,20 @@ const Sensor = {
     let avg = 0;
 
     sortedData.forEach((reading, idx) => {
-      let readingValue = parseFloat(reading.value);
-      let lastItem = idx === sortedData.length - 1;
+      let lastItem;
       let pastCurrentTimeBlock = this.toMilliSec(reading.timestamp) > timeBlockLimit;
+      const readingValue = parseFloat(reading.value);
+      const isReadingValNotNum = typeof readingValue !== 'number';
+      const isReadingValNaN = isNaN(readingValue);
+      const isReadingValZero = readingValue === 0;
 
-      let isReadingValNotNum = typeof readingValue !== 'number';
-      let isReadingValNaN = isNaN(readingValue);
-      let isReadingValZero = readingValue === 0;
-
-      if ( isReadingValNotNum || isReadingValNaN || isReadingValZero ) {
-        return
-      }
-
+      if (isReadingValNotNum || isReadingValNaN || isReadingValZero) return
 
       if (pastCurrentTimeBlock) {
-        let value = avg / count;
+        const timestamp = new Date(timeBlockLimit);
+        const value = avg / count;
 
-        timeBlocks.push({ timestamp: new Date(timeBlockLimit), value });
+        timeBlocks.push({ timestamp, value });
         timeBlockLimit += timeblock;
         count = 0;
         avg = 0;
@@ -42,10 +39,13 @@ const Sensor = {
 
       count++;
       avg += readingValue;
+      isLastItem = idx === sortedData.length - 1;
 
-      if (lastItem) {
-        let value = avg / count;
-        timeBlocks.push({ timestamp: new Date(timeBlockLimit), value });
+      if (isLastItem) {
+        const timestamp = new Date(timeBlockLimit);
+        const value = avg / count;
+
+        timeBlocks.push({ timestamp, value });
       }
     });
 

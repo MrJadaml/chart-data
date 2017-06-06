@@ -143,9 +143,54 @@ describe('Sensor Model', () => {
 
 
     it('should ignore readings with a 0 `value`', () => {
+      const startDate = '2017-01-24T14:10:00.594Z';
+      const sensorData = [{
+          "title": "vpd",
+          "value": "0",
+          "sensor_num": "METEOMK1-7FADC",
+          "room": "Hoop 1",
+          "sensor_version": "1.00",
+          "timestamp": new Date("2017-01-24T14:10:39.594Z"),
+          "hostname": "cam0243",
+          "vpd": "10.0858810644",
+          "sensor_group": "Production",
+          "role": "plant cam",
+          "type": "vpd",
+        }, {
+          "title": "vpd",
+          "value": "7.68855202804",
+          "sensor_num": "METEOMK1-7FAAB",
+          "room": "Hoop 1",
+          "sensor_version": "1.00",
+          "timestamp": new Date("2017-01-24T14:13:15.156Z"),
+          "hostname": "cam0271",
+          "vpd": "7.68855202804",
+          "sensor_group": "Production",
+          "role": "plant cam",
+          "type": "vpd",
+      }];
+
+      const actual = Sensor.buildDataPulse(sensorData, startDate);
+
+      actual.should.be.an('array')
+      .with.lengthOf(1);
+      actual[0].should.be.an('object')
+      .and.have.ownPropertyDescriptor('timestamp', {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        value: new Date ('2017-01-24T14:20:00.594Z'),
+      });
+      actual[0].should.be.an('object')
+      .and.have.ownPropertyDescriptor('value', {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        value: 7.68855202804,
+      });
     });
 
-    it('should set chartpoint to previous time block if it is an empty array', () => {
+    xit('should set chartpoint to previous time block if it is an empty array', () => {
     });
   });
 

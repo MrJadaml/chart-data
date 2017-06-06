@@ -24,8 +24,9 @@ const Sensor = {
 
       let isReadingValNotNum = typeof readingValue !== 'number';
       let isReadingValNaN = isNaN(readingValue);
+      let isReadingValZero = readingValue === 0;
 
-      if ( isReadingValNotNum || isReadingValNaN ) {
+      if ( isReadingValNotNum || isReadingValNaN || isReadingValZero ) {
         return
       }
 

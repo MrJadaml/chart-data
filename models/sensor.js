@@ -16,6 +16,7 @@ const Sensor = {
     let timeBlockLimit = this.toMilliSec(startDate) + timeblock;
     let count = 0;
     let avg = 0;
+    let prevChartPoint = { timestamp: new Date(this.toMilliSec(startDate) + timeblock), value: 0 };
 
     sortedData.forEach((reading, idx) => {
       let lastItem;
@@ -25,17 +26,25 @@ const Sensor = {
       const isReadingValNaN = isNaN(readingValue);
       const isReadingValZero = readingValue === 0;
 
-      if (isReadingValNotNum || isReadingValNaN || isReadingValZero) return
-
       if (pastCurrentTimeBlock) {
         const timestamp = new Date(timeBlockLimit);
         const value = avg / count;
 
-        timeBlocks.push({ timestamp, value });
+        if (avg === 0) {
+          timeBlocks.push(prevChartPoint);
+        } else {
+          const nextTimestamp = new Date(timeBlockLimit + timeblock);
+
+          prevChartPoint = { timestamp: nextTimestamp, value };
+          timeBlocks.push({ timestamp, value });
+        }
+
         timeBlockLimit += timeblock;
         count = 0;
         avg = 0;
       }
+
+      if (isReadingValNotNum || isReadingValNaN || isReadingValZero) return;
 
       count++;
       avg += readingValue;

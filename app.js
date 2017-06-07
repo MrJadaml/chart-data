@@ -3,28 +3,10 @@ const logger = require('morgan');
 const db = require('monk')('localhost/iunu');
 const Sensors = db.get('sensors');
 const app = express();
-
-const Sensor = require('./models/sensor.js');
+const chartdata = require('./routes/chartdata');
 
 app.use(logger('dev'));
-
-app.get('/chartdata', (req, res, next) => {
-  const { title, room, startDate, length } = req.query;
-
-  if ( !title || !room || !startDate ) {
-    const err = new Error();
-    err.status = 400;
-    err.message = 'Missing room, start_date, or title';
-    return next(err);
-  }
-
-  Sensor.getChartData(title, room, startDate, length)
-  .then(data => {
-    let chartData = Sensor.buildDataPulse(data, startDate);
-
-    res.json(chartData);
-  });
-});
+app.use('/chartdata', chartdata);
 
 app.use((_req, _res, next) => {
   const err = new Error('Not Found');

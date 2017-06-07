@@ -32,4 +32,4 @@ node_modules
 
 # Other
 scratch.md
-./db/sensordata.json
+*sensordata*
